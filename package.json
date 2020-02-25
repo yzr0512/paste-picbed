@@ -1,7 +1,7 @@
 {
-  "name": "vscode-plugin-picbed",
-  "displayName": "vscode-plugin-picbed",
-  "description": "vscode markdown 图床插件",
+  "name": "vscode-paste-picbed",
+  "displayName": "Paste picbed",
+  "description": "一键将剪贴板图片上传到阿里云图床，并粘贴为 markdown 的链接。",
   "version": "0.0.1",
   "publisher": "nadyu",
   "engines": {
@@ -17,70 +17,55 @@
   "contributes": {
     "configuration": [
       {
-        "title": "这是哪的标题",
+        "title": "Paste Picbed",
         "properties": {
-          "pastePic.accessKeyId": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "default": null,
-            "description": "阿里云的accessid"
-          },
-          "pastePic.accessKeySecret": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "default": null,
-            "description": "阿里云的accesskey"
-          },
-          "pastePic.bucket": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "default": null,
-            "description": ""
-          },
-          "pastePic.region": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "default": null,
-            "description": ""
-          },
-          "pastePic.localPath": {
-            "type": [
-              "string",
-              "null"
-            ],
+          "pastePicbed.alioss.accessKeyId": {
+            "type": "string",
             "default": "",
-            "description": "图片的本地路径"
+            "description": "阿里云 OSS 的 accessKeyId"
           },
-          "pastePic.remotePath": {
+          "pastePicbed.alioss.accessKeySecret": {
+            "type": "string",
+            "default": "",
+            "description": "阿里云 OSS 的 accessKeySecret"
+          },
+          "pastePicbed.alioss.bucket": {
+            "type": "string",
+            "default": "",
+            "description": "阿里云 OSS 的 BucketName"
+          },
+          "pastePicbed.alioss.region": {
+            "type": "string",
+            "default": "",
+            "description": "阿里云 OSS 的 Endpoint，比如 oss-cn-beijing"
+          },
+          "pastePicbed.localPath": {
+            "type": "string",
+            "default": "${folderPath}",
+            "description": "图片的本地路径，不含文件名，默认是保存在和 MD 文件同级目录下。路径支持关键字的替换，支持的关键字有：\n${projectPath} 表示当前项目的根目录，${folderPath} 表示当前 MD 文件的目录，\n${year} 表示四位的年份，${month} 表示两位的月份，${day} 表示两位的日期，\n${hour} 表示两位的24小时制的小时，${min} 表示两位的分数，${sec} 表示两位的秒数。"
+          },
+          "pastePicbed.remotePath": {
             "type": "string",
             "default": "${year}/${month}/${day}",
-            "description": ""
+            "description": "图片在阿里云 OSS 中的路径，不含文件名。路径支持部分关键字的替换，详见 localPath 字段。"
           },
-          "pastePic.imageName": {
+          "pastePicbed.imageName": {
             "type": "string",
             "default": "${year}-${month}-${day}-${hour}${min}${sec}",
-            "description": ""
+            "description": "图片名。"
           }
         }
       }
     ],
     "commands": [
       {
-        "command": "extension.pastePic",
+        "command": "extension.pastePicbed",
         "title": "上传剪贴板图片至图床"
       }
     ],
     "keybindings": [
       {
-        "command": "extension.pastePic",
+        "command": "extension.pastePicbed",
         "key": "ctrl+v",
         "mac": "cmd+v",
         "when": "editorTextFocus"

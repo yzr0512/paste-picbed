@@ -38,7 +38,7 @@ function activate(context) {
 	context.subscriptions.push(disposable);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand("extension.pastePic", pastePic)
+		vscode.commands.registerCommand("extension.pastePicbed", pastePicbed)
 	);
 }
 exports.activate = activate;
@@ -58,11 +58,11 @@ var filePath; // 文件的路径
 var folderPath;
 var projectPath;
 
-function pastePic() {
+function pastePicbed() {
 	// 加载配置
-	var config = vscode.workspace.getConfiguration("pastePic");
-	if (!config.accessKeyId || !config.accessKeySecret || !config.bucket || !config.region) {
-		vscode.window.showErrorMessage(`accessid, accesskey, region or bucket can't be null`);
+	var config = vscode.workspace.getConfiguration("pastePicbed");
+	if (config.alioss.accessKeyId == '' || config.alioss.accessKeySecret == '' || config.alioss.bucket == '' || config.alioss.region == '') {
+		vscode.window.showErrorMessage(`accessKeyId, accessKeySecret, bucket or region can't be empty.`);
 		return;
 	}
 	// console.log(config);
@@ -123,10 +123,10 @@ function pastePic() {
 					return;
 				} else {
 					let client = new oss({
-						region: config.region,
-						accessKeyId: config.accessKeyId,
-						accessKeySecret: config.accessKeySecret,
-						bucket: config.bucket,
+						region: config.alioss.region,
+						accessKeyId: config.alioss.accessKeyId,
+						accessKeySecret: config.alioss.accessKeySecret,
+						bucket: config.alioss.bucket,
 						secure: true
 					});
 
