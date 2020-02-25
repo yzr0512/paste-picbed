@@ -1,40 +1,111 @@
 {
-	"name": "vscode-plugin-picbed",
-	"displayName": "vscode-plugin-picbed",
-	"description": "vscode markdown 图床插件",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.42.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:extension.helloWorld"
-	],
-	"main": "./extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
-			}
-		]
-	},
-	"scripts": {
-		"lint": "eslint .",
-		"pretest": "npm run lint",
-		"test": "node ./test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^7.0.1",
-		"@types/node": "^12.11.7",
-		"@types/vscode": "^1.42.0",
-		"eslint": "^6.8.0",
-		"glob": "^7.1.6",
-		"mocha": "^7.0.1",
-		"typescript": "^3.7.5",
-		"vscode-test": "^1.3.0"
-	}
+  "name": "vscode-plugin-picbed",
+  "displayName": "vscode-plugin-picbed",
+  "description": "vscode markdown 图床插件",
+  "version": "0.0.1",
+  "publisher": "nadyu",
+  "engines": {
+    "vscode": "^1.42.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
+  "main": "./src/extension",
+  "contributes": {
+    "configuration": [
+      {
+        "title": "这是哪的标题",
+        "properties": {
+          "pastePic.accessKeyId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null,
+            "description": "阿里云的accessid"
+          },
+          "pastePic.accessKeySecret": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null,
+            "description": "阿里云的accesskey"
+          },
+          "pastePic.bucket": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null,
+            "description": ""
+          },
+          "pastePic.region": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null,
+            "description": ""
+          },
+          "pastePic.localPath": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": "",
+            "description": "图片的本地路径"
+          },
+          "pastePic.remotePath": {
+            "type": "string",
+            "default": "${year}/${month}/${day}",
+            "description": ""
+          },
+          "pastePic.imageName": {
+            "type": "string",
+            "default": "${year}-${month}-${day}-${hour}${min}${sec}",
+            "description": ""
+          }
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "extension.pastePic",
+        "title": "上传剪贴板图片至图床"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.pastePic",
+        "key": "ctrl+v",
+        "mac": "cmd+v",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^7.0.1",
+    "@types/node": "^12.11.7",
+    "@types/vscode": "^1.42.0",
+    "eslint": "^6.8.0",
+    "glob": "^7.1.6",
+    "mocha": "^7.0.1",
+    "typescript": "^3.7.5",
+    "vscode-test": "^1.3.0"
+  },
+  "dependencies": {
+    "ali-oss": "^6.5.1",
+    "moment": "^2.24.0",
+    "path": "^0.12.7"
+  }
 }
