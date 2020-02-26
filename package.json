@@ -10,6 +10,10 @@
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yzr0512/vscode-paste-picbed.git"
+  },
   "activationEvents": [
     "onLanguage:markdown"
   ],

@@ -1,5 +1,8 @@
 # README
 
+借鉴了Paste Image的源码实现。[GitHub](https://github.com/mushanshitiancai/vscode-paste-image)
+在其基础上增加了上传图床功能。
+
 ## Features
 
 在 markdown 文件中按下粘贴快捷键 `ctrl+v` 时，若剪贴板中的数据是图片则将上传至图床（目前只支持阿里云OSS），并将 markdown 格式的图片链接粘贴到文档中。
