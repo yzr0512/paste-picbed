@@ -23,6 +23,11 @@
       {
         "title": "Paste Picbed",
         "properties": {
+          "pastePicbed.onlySaveLocal": {
+            "type": "boolean",
+            "default": false,
+            "description": "是否仅保存图片在本地，不上传图床。"
+          },
           "pastePicbed.alioss.accessKeyId": {
             "type": "string",
             "default": "",
@@ -45,13 +50,13 @@
           },
           "pastePicbed.localPath": {
             "type": "string",
-            "default": "${folderPath}",
-            "description": "图片的本地路径，不含文件名，默认是保存在和 MD 文件同级目录下。路径支持关键字的替换，支持的关键字有：\n${projectPath} 表示当前项目的根目录，${folderPath} 表示当前 MD 文件的目录，\n${year} 表示四位的年份，${month} 表示两位的月份，${day} 表示两位的日期，\n${hour} 表示两位的24小时制的小时，${min} 表示两位的分数，${sec} 表示两位的秒数。"
+            "default": "${folderPath}/media/${fileName}",
+            "description": "图片的本地路径，不含文件名。"
           },
           "pastePicbed.remotePath": {
             "type": "string",
             "default": "${year}/${month}/${day}",
-            "description": "图片在阿里云 OSS 中的路径，不含文件名。路径支持部分关键字的替换，详见 localPath 字段。"
+            "description": "图片在阿里云 OSS 中的路径，不含文件名。"
           },
           "pastePicbed.imageName": {
             "type": "string",
@@ -65,6 +70,10 @@
       {
         "command": "extension.pastePicbed",
         "title": "上传剪贴板图片至图床，并粘贴markdown格式链接"
+      },
+      {
+        "command": "extension.pastePicbedUploadSwitch",
+        "title": "图像是否上传图床的开关。"
       }
     ],
     "keybindings": [
@@ -72,6 +81,12 @@
         "command": "extension.pastePicbed",
         "key": "alt+v",
         "mac": "ctrl+v",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.pastePicbedUploadSwitch",
+        "key": "alt+u",
+        "mac": "ctrl+u",
         "when": "editorTextFocus"
       }
     ]

@@ -21,24 +21,11 @@ function activate(context) {
 		'Congratulations, your extension "vscode-plugin-picbed" is now active!'
 	);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand(
-		"extension.helloWorld",
-		function () {
-			// The code you place here will be executed every time your command is executed
-
-			// Display a message box to the user
-			vscode.window.showInformationMessage("Hello World!");
-			
-		}
-	);
-
-	context.subscriptions.push(disposable);
-
 	context.subscriptions.push(
 		vscode.commands.registerCommand("extension.pastePicbed", pastePicbed)
+	);
+	context.subscriptions.push(
+		vscode.commands.registerCommand('extension.pastePicbedUploadSwitch', pastePicbedUploadSwitch)
 	);
 }
 exports.activate = activate;
@@ -55,12 +42,27 @@ module.exports = {
 };
 
 var filePath; // 文件的路径
+var fileName;
+var ext;
 var folderPath;
 var projectPath;
+var localPath;
+var config;
+
+function pastePicbedUploadSwitch() {
+	config = vscode.workspace.getConfiguration("pastePicbed");
+	if (config.onlySaveLocal){
+		config.update('onlySaveLocal', false);
+		vscode.window.showInformationMessage('pastePicbed.onlySaveLocal: false');
+	} else{
+		config.update('onlySaveLocal', true);
+		vscode.window.showInformationMessage('pastePicbed.onlySaveLocal: true');
+	}
+}
 
 function pastePicbed() {
 	// 加载配置
-	var config = vscode.workspace.getConfiguration("pastePicbed");
+	config = vscode.workspace.getConfiguration("pastePicbed");
 	if (config.alioss.accessKeyId == '' || config.alioss.accessKeySecret == '' || config.alioss.bucket == '' || config.alioss.region == '') {
 		vscode.window.showErrorMessage(`accessKeyId, accessKeySecret, bucket or region can't be empty.`);
 		return;
@@ -70,23 +72,22 @@ function pastePicbed() {
 	let editor = vscode.window.activeTextEditor;
 	if (!editor) return;
 
-	var localPath;
-	let m = moment();
+	let m = moment(); // 记录当前时间，用于替换路径和文件名中的关键字
 
-	// 如果 localPath 是空则将路径设置当前文件位置
 	let fileUri = editor.document.uri;
 	if (!fileUri) return;
-	// console.log(fileUri);
+	if (fileUri.scheme === "untitled") {
+		// filePath = folderPath;
+		// 未保存的文件没有路径
+		vscode.window.showInformationMessage(`Can't get the path of file . You need to save the file first.`);
+		return;
+	}
 
 	filePath = fileUri.fsPath; // 文件的路径
+	ext = path.extname(filePath);
+	fileName = path.basename(filePath, ext);
 	folderPath = path.dirname(filePath);
 	projectPath = vscode.workspace.rootPath;
-	// console.log(filePath, folderPath, projectPath);
-	
-	if (fileUri.scheme === "untitled") {
-		// console.log("未命名文件");
-		filePath = folderPath;
-	}
 
 	if (!config.localPath) {
 		// 未设置路径的时候默认取当前文件的位置
@@ -96,7 +97,7 @@ function pastePicbed() {
 	}
 
 	// TODO: 将选中文本作为文件名
-	// var selection = editor.selection;
+	var selection = editor.selection;
 	// var selectText = editor.document.getText(selection);
 	// if (selectText && /[\\:*?<>|]/.test(selectText)){
 	// 	console.log('Your selection is not a valid filename!');
@@ -104,11 +105,11 @@ function pastePicbed() {
 	// }
 	// console.log("", selectText);
 
-	let imageName = replaceToken(m, config.imageName)+'.png';
+	let imageName = replaceToken(m, config.imageName) + '.png';
 
 	// win平台使用正斜杠\做路径，unix平台使用反斜杠/
 	// path会根据平台自动切换，在win平台远程路径会出错，这里需指定远程路径是unix格式。
-	let remotePath = path.posix.join(replaceToken(m, config.remotePath), imageName); 
+	let remotePath = path.posix.join(replaceToken(m, config.remotePath), imageName);
 	let imagePath = path.join(localPath, imageName)
 	// console.log(localPath);
 
@@ -124,7 +125,29 @@ function pastePicbed() {
 					console.log('no image');
 					vscode.commands.executeCommand('editor.action.clipboardPasteAction');
 					return;
-				} else {
+				} else if (config.onlySaveLocal) {
+					
+					// if (config.localPath.indexOf('${') == 0){
+					// 	imagePath = '![](' + path.relative(folderPath, imagePath) + ')';
+					// } else {
+					// 	// 绝对路径在预览的时候可能会有问题
+					// 	imagePath = '![](' + imagePath + ')';
+					// }
+
+					// 采用相对路径
+					imagePath = '![](' + path.relative(folderPath, imagePath) + ')';
+					editor.edit(edit => {
+						// let current = editor.selection;
+						// if (current.isEmpty) {
+						// 	edit.insert(current.start, imagePath);
+						// } else {
+						// 	edit.replace(current, imagePath);
+						// }
+						edit.insert(selection.start, imagePath);
+					});
+
+				} else{
+
 					let client = new oss({
 						region: config.alioss.region,
 						accessKeyId: config.alioss.accessKeyId,
@@ -138,13 +161,13 @@ function pastePicbed() {
 						// @ts-ignore
 						imagePath = '![](' + response.url + ')';
 						editor.edit(edit => {
-							let current = editor.selection;
-
-							if (current.isEmpty) {
-								edit.insert(current.start, imagePath);
-							} else {
-								edit.replace(current, imagePath);
-							}
+							// let current = editor.selection;
+							// if (current.isEmpty) {
+							// 	edit.insert(current.start, imagePath);
+							// } else {
+							// 	edit.replace(current, imagePath);
+							// }
+							edit.insert(selection.start, imagePath);
 						});
 					}).catch(function (err) {
 						vscode.window.showErrorMessage(err);
@@ -178,7 +201,7 @@ function replaceToken(m, str) {
 	str = str.replace('${hour}', m.format('hh'));
 	str = str.replace('${min}', m.format('mm'));
 	str = str.replace('${sec}', m.format('ss'));
-	str = str.replace('${filePath}', filePath);
+	str = str.replace('${fileName}', fileName);
 	str = str.replace('${folderPath}', folderPath);
 	str = str.replace('${projectPath}', projectPath);
 	// console.log(str);
