@@ -66,8 +66,8 @@
     "keybindings": [
       {
         "command": "extension.pastePicbed",
-        "key": "ctrl+v",
-        "mac": "cmd+v",
+        "key": "alt+v",
+        "mac": "ctrl+v",
         "when": "editorTextFocus"
       }
     ]

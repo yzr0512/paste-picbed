@@ -105,7 +105,10 @@ function pastePicbed() {
 	// console.log("", selectText);
 
 	let imageName = replaceToken(m, config.imageName)+'.png';
-	let remotePath = path.join(replaceToken(m, config.remotePath), imageName);
+
+	// win平台使用正斜杠\做路径，unix平台使用反斜杠/
+	// path会根据平台自动切换，在win平台远程路径会出错，这里需指定远程路径是unix格式。
+	let remotePath = path.posix.join(replaceToken(m, config.remotePath), imageName); 
 	let imagePath = path.join(localPath, imageName)
 	// console.log(localPath);
 

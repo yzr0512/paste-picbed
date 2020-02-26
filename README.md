@@ -18,4 +18,6 @@ npm install
 
 初步实现功能。
 
+- [x] bug: win平台上传的图片路径不正确，斜杠反了。
+
 **Enjoy!**
