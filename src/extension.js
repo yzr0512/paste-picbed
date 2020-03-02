@@ -51,12 +51,12 @@ var config;
 
 function pastePicbedUploadSwitch() {
 	config = vscode.workspace.getConfiguration("pastePicbed");
-	if (config.onlySaveLocal){
+	if (config.onlySaveLocal) {
 		config.update('onlySaveLocal', false);
-		vscode.window.showInformationMessage('pastePicbed.onlySaveLocal: false');
-	} else{
+		vscode.window.showInformationMessage('Paste Picbed: 粘贴的图片将上传至图床。');
+	} else {
 		config.update('onlySaveLocal', true);
-		vscode.window.showInformationMessage('pastePicbed.onlySaveLocal: true');
+		vscode.window.showInformationMessage('Paste Picbed: 粘贴的图片仅保存在本地。');
 	}
 }
 
@@ -126,7 +126,7 @@ function pastePicbed() {
 					vscode.commands.executeCommand('editor.action.clipboardPasteAction');
 					return;
 				} else if (config.onlySaveLocal) {
-					
+
 					// if (config.localPath.indexOf('${') == 0){
 					// 	imagePath = '![](' + path.relative(folderPath, imagePath) + ')';
 					// } else {
@@ -146,7 +146,7 @@ function pastePicbed() {
 						edit.insert(selection.start, imagePath);
 					});
 
-				} else{
+				} else {
 
 					let client = new oss({
 						region: config.alioss.region,
@@ -190,15 +190,10 @@ function getISOTime(expire) {
 }
 
 function replaceToken(m, str) {
-	// Y - 四位年份，MM - 两位月份，DD -两位日期
-	// h - 小时（12小时制），hh - 小时（24小时制）
-	// mm - 两位分钟数
-	// ss - 两位秒数
-	// return moment.format(str);
 	str = str.replace('${year}', m.format('Y'));
 	str = str.replace('${month}', m.format('MM'));
 	str = str.replace('${day}', m.format('DD'));
-	str = str.replace('${hour}', m.format('hh'));
+	str = str.replace('${hour}', m.format('HH'));
 	str = str.replace('${min}', m.format('mm'));
 	str = str.replace('${sec}', m.format('ss'));
 	str = str.replace('${fileName}', fileName);
