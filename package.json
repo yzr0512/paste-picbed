@@ -2,7 +2,7 @@
   "name": "vscode-paste-picbed",
   "displayName": "Paste picbed",
   "description": "一键将剪贴板图片上传到阿里云图床，并粘贴为 markdown 的链接。",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "naduy",
   "engines": {
     "vscode": "^1.42.0"
